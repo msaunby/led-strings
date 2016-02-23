@@ -14,6 +14,17 @@
 
 	<script>
 
+    function reduceBits(data, bits){
+        var newdata = [];
+        data.forEach(function(x){
+          x = x >> (8-bits);
+          x = x << (8-bits);
+          newdata.push(x);
+        });
+        return newdata;
+    }
+
+
 		// Put event listeners into place
 		window.addEventListener("DOMContentLoaded", function() {
 			var video = document.getElementById("video"),
@@ -52,6 +63,7 @@
           var col = (n - (~~(n/15) *15))%8;
           i = (15 * row + col * 2) * 4;
           var color = [pix[i], pix[i+1], pix[i+2]];
+          color = reduceBits(color, 3);
           drawLight(color, n, ctx);
         }
       }
@@ -93,10 +105,6 @@
   var ctx = canvas.getContext( '2d' );
   ctx.fillStyle = "#222222";
   ctx.fillRect(0, 0, 400, 400);
-
-  for(var x=0; x<60; x++){
-     drawLight(pixels[x], x, ctx);
-  }
 
   document.getElementById('mycanvas').appendChild( canvas );
 
