@@ -1,0 +1,26 @@
+<html>
+<head>
+
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+  <script type="text/javascript" src="http://threejs.org/build/three.min.js"></script>
+  <script type="text/javascript" src="http://threejs.org/examples/js/controls/TrackballControls.js"></script>
+
+  <script>
+  var scene = new THREE.Scene();
+  var width  = window.innerWidth,
+  height = window.innerHeight;
+  var camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 0);
+  camera.position.y = 0;
+  camera.position.z = 500;
+  var controls = new THREE.TrackballControls(camera);
+  </script>
+</head>
+<body>
+  <div id="webgl"></div>
+  <script>
+  document.getElementById('webgl').appendChild(renderer.domElement);
+  render();
+  </script>
+</body>
+</html>

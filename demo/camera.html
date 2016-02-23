@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+  <title>canvas gradient fill demo</title>
+</head>
+<body>
+  <div id='mycanvas'></div>
+  <div style="display:none">
+    <div id='source'></div>
+    <video id="video" width="200" height="200" autoplay></video>
+	  <button id="snap" class="sexyButton">Snap Photo</button>
+  </div>
+	<!-- <canvas id="canvas" width="200" height="200"></canvas> -->
+
+	<script>
+
+		// Put event listeners into place
+		window.addEventListener("DOMContentLoaded", function() {
+			var video = document.getElementById("video"),
+				videoObj = { "video": true },
+				errBack = function(error) {
+					console.log("Video capture error: ", error.code);
+				};
+
+			// Put video listeners into place
+			if(navigator.getUserMedia) { // Standard
+				navigator.getUserMedia(videoObj, function(stream) {
+					video.src = stream;
+				}, errBack);
+			} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+				navigator.webkitGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+				}, errBack);
+			} else if(navigator.mozGetUserMedia) { // WebKit-prefixed
+				navigator.mozGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+				}, errBack);
+			}
+      console.log(video);
+      video.addEventListener("loadedmetadata", function () {
+        video.setAttribute("width", video.videoWidth);
+        video.setAttribute("height", video.videoHeight);
+      }, false);
+      video.play();
+
+      function grabPic() {
+        c.drawImage(video, 120, 40, 400, 400, 0, 0, 15, 16);
+        var imgd = c.getImageData(0, 0, 15, 16);
+        var pix = imgd.data;
+        for (var n = 0; n < 60; n++) {
+          var row = (~~(n/15) << 1) + ~~((n%15)/8);
+          var col = (n - (~~(n/15) *15))%8;
+          i = (15 * row + col * 2) * 4;
+          var color = [pix[i], pix[i+1], pix[i+2]];
+          drawLight(color, n, ctx);
+        }
+      }
+			// Trigger photo take
+			//document.getElementById("snap").addEventListener("click", grabPic, false);
+
+      var intervalID = setInterval(grabPic, 200);
+  });
+
+	</script>
+  <script>
+  // See
+  // https://developer.mozilla.org/en/docs/Web/API/CanvasRenderingContext2D
+  // and
+  //http://www.w3.org/TR/2dcontext/#pixel-manipulation
+  // for more information.
+
+  var pixels = [];
+  for(var n=0; n<60; n++){
+    pixels[n] = [100,200,n*4];
+  }
+
+  function drawLight(color, n, ctx) {
+    var row = (~~(n/15) << 1) + ~~((n%15)/8);
+    var col = (n - (~~(n/15) *15))%8;
+    var offset = 25*(row%2);
+    ctx.beginPath();
+    ctx.fillStyle = "rgb(" + color.join() + ")";
+    ctx.arc(offset+25+col*50,25+row*44,25,0,Math.PI*2,true);
+    ctx.fill();
+  }
+
+
+
+  var canvas = document.createElement( 'canvas' );
+  canvas.width = 400;
+  canvas.height = 360;
+
+  var ctx = canvas.getContext( '2d' );
+  ctx.fillStyle = "#222222";
+  ctx.fillRect(0, 0, 400, 400);
+
+  for(var x=0; x<60; x++){
+     drawLight(pixels[x], x, ctx);
+  }
+
+  document.getElementById('mycanvas').appendChild( canvas );
+
+  var srccanvas =  document.createElement( 'canvas' );
+  srccanvas.width = 15;
+  srccanvas.height = 16;
+  var c = srccanvas.getContext( '2d' );
+  c.fillStyle = "#880000";
+  c.fillRect(0, 0, 15, 16);
+  c.fill();
+
+  document.getElementById('source').appendChild( srccanvas );
+  </script>
+</body>
+</html>
